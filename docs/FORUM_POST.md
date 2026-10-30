@@ -135,9 +135,14 @@ With that, only the udev rule and BlueZ 5.88 remain.
 
 ## The optional auth daemon
 
-Until everything above is in place (or as a fallback if the panel ever goes
-quiet), `ble_auth.py` performs the `0x06` handshake and re-authenticates
-every ~500 s. Because BlueZ blocks D-Bus **writes** to the HID Report
+With fixes 1–4 in place Resolve authenticates the panel itself at startup
+and renews the handshake every ~5 minutes (observed via GATT: the 600 s
+countdown resets at ~300 s intervals), so the daemon is normally **not
+needed** — and running both at once just makes their periodic resets fight.
+
+As a fallback (e.g. firmware differences, or the panel going quiet),
+`ble_auth.py` performs the `0x06` handshake and re-authenticates every
+~500 s. Because BlueZ blocks D-Bus **writes** to the HID Report
 characteristic (`NotAuthorized`) but allows **reads**, it writes through
 `/dev/hidraw` (`HIDIOCSFEATURE`, intact) and reads responses over GATT
 (intact). Run it as a systemd user service (see repo).

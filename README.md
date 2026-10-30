@@ -59,10 +59,13 @@ feature report `0x06` (public algorithm, from
 [smunaut/blackmagic-misc](https://github.com/smunaut/blackmagic-misc),
 Apache-2.0 — see [NOTICE](NOTICE)). The handshake returns a 600 s timeout.
 
-With fixes #2 and #3, Resolve authenticates the panel itself. If your panel
+With fixes #2 and #3, Resolve authenticates the panel itself at startup and
+renews the handshake every ~5 minutes (observed via GATT: the panel's 600 s
+countdown resets at ~300 s intervals) — **no daemon needed**. If your panel
 ever goes quiet (firmware differences, Resolve not renewing over BLE),
 [`ble_auth.py`](ble_auth.py) performs the handshake and re-authenticates every
-~500 s as a systemd user service.
+~500 s as a systemd user service. Don't run both: their periodic resets fight
+each other.
 
 ---
 
