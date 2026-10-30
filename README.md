@@ -144,6 +144,18 @@ donation is appreciated but never required:
   [wise.com/pay/me/rudahs1](https://wise.com/pay/me/rudahs1) and pay by card,
   Apple/Google Pay or Wise balance — Wise converts to BRL automatically.
 
+  Prefer a direct transfer? USD account details (Wise, receive-only):
+
+  ```
+  Name:            Rudah Santos e Silva
+  Account type:    Checking
+  Routing (ACH/wire): 026073150
+  Account number:  8314576918
+  Bank:            Community Federal Savings Bank
+                   89-16 Jamaica Ave, Woodhaven, NY 11421, USA
+  SWIFT/BIC:       CMFGUS33
+  ```
+
 
 ## License
 
