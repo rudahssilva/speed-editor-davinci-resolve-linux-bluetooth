@@ -49,11 +49,17 @@ echo "ok: $BIN_DIR/{read_hid,ble_auth}.py + servico speed-editor-ble-auth"
 # ---------- 3. patch no binario do Resolve ----------
 step "3/4 Patch no binario do Resolve"
 if command -v podman >/dev/null 2>&1 && podman container exists "$CONTAINER" 2>/dev/null; then
+    # Resolve dentro de um container distrobox/podman (caso tipico)
     podman cp "$HERE/resolve-patch.sh" "$CONTAINER:/tmp/resolve-patch.sh"
     podman exec -u root "$CONTAINER" sh /tmp/resolve-patch.sh
+elif [ -f /opt/resolve/bin/resolve ]; then
+    # Resolve instalado direto no host (sem container)
+    sudo sh "$HERE/resolve-patch.sh"
 else
-    echo "container '$CONTAINER' nao encontrado via podman; rode manualmente:"
-    echo "  podman exec -u root $CONTAINER sh $HERE/resolve-patch.sh"
+    echo "nao achei o Resolve (nem o container '$CONTAINER', nem /opt/resolve/bin/resolve)."
+    echo "Rode manualmente:"
+    echo "  podman exec -u root <container> sh $HERE/resolve-patch.sh   # se for container"
+    echo "  sudo sh $HERE/resolve-patch.sh                              # se for no host"
 fi
 
 # ---------- 4. BlueZ ----------
