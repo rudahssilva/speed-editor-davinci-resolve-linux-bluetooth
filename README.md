@@ -157,6 +157,14 @@ donation is appreciated but never required:
   ```
 
 
+## Acknowledgments
+
+Developed with significant AI assistance (DeepSeek models, via the DeepSeek
+Harness) under the direction of the human author, who reviewed and validated
+every step. All code is MIT; the human author remains responsible for the
+project. In the same spirit, the BlueZ commit this repo depends on carries an
+`Assisted-by` trailer for the AI tool used by its maintainer.
+
 ## Contributing
 
 Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Most useful
