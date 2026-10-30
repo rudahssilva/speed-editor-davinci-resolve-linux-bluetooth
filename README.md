@@ -109,6 +109,7 @@ Useful:
 | `read_hid.py` | HID tool + `bmd_kbd_auth` implementation |
 | `check.sh`, `tools/parse_btmon.py`, `repair.sh` | diagnostics |
 | `docs/FORUM_POST.md` | full write-up (forum post) |
+| `docs/MANUAL-INSTALL.md` | install Resolve by hand when the official installer fails (21.1.2 bug) |
 
 ## FAQ
 
