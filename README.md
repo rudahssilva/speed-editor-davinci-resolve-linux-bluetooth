@@ -133,7 +133,7 @@ the correct reply sizes in Resolve (see `docs/FORUM_POST.md`).
 This project is free (MIT). If it saved you a weekend of debugging, a
 donation is appreciated but never required:
 
-- **Pix (Brasil):** chave aleatória `PIX_KEY_PENDING` (adicione a chave na
+- **Pix (Brasil):** chave aleatória `501eed87-cbf6-4ade-9df5-c3527d158bd5` (adicione a chave na
   área Pix do seu app bancário/Wise: "registrar chave aleatória").
 - **International:** [wise.com/pay/me/rudahs1](https://wise.com/pay/me/rudahs1)
 
