@@ -12,7 +12,8 @@ https://github.com/rudahssilva/speed-editor-davinci-resolve-linux-bluetooth
 
 ## Environment
 
-- DaVinci Resolve Studio **21.1.1** (v21.1.1.0010, Linux/Clang x86_64)
+- DaVinci Resolve Studio **21.1.1 and 21.1.2** (v21.1.1.0010 and
+  v21.1.2.0010, Linux/Clang x86_64) — both tested, same behavior
 - Arch Linux, kernel 7.2.11-arch1-1, BlueZ 5.87 with the one-line backport
 - Speed Editor over Bluetooth LE with the latest available firmware
   (Blackmagic hasn't shipped a firmware update in years); Resolve inside a
