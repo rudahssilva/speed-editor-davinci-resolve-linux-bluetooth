@@ -157,9 +157,15 @@ donation is appreciated but never required:
   ```
 
 
+## Contributing
+
+Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Most useful
+contributions: test reports from other distros/BlueZ versions, and updated
+Resolve binary offsets when a new release moves them.
+
 ## License
 
-MIT for this repository's code. The `bmd_kbd_auth` constants are derived from
-[smunaut/blackmagic-misc](https://github.com/smunaut/blackmagic-misc)
-(Apache-2.0); the BlueZ patch is from the BlueZ project (GPL-2.0). See
-[LICENSE](LICENSE) and [NOTICE](NOTICE).
+MIT for this repository's code. Third-party material: the `bmd_kbd_auth`
+constants come from [smunaut/blackmagic-misc](https://github.com/smunaut/blackmagic-misc)
+(Apache-2.0), and the BlueZ fix is the upstream commit by Luiz Augusto von
+Dentz (Intel), GPL-2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
