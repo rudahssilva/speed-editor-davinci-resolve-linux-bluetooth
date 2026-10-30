@@ -6,15 +6,16 @@ Bluetooth, but it takes **three** independent fixes: (1) a udev rule,
 (3) a 3-byte patch in the Resolve binary, whose Bluetooth checks were
 written against the *buggy* BlueZ behavior. A small optional daemon covers
 the panel's 600-second authentication. Everything is on GitHub:
-`<repo link>`.
+https://github.com/rudahssilva/speed-editor-davinci-resolve-linux-bluetooth
 
 ---
 
 ## Environment
 
-- DaVinci Resolve Studio 21.1.1
-- Arch Linux, kernel 7.2.11-arch1-1, BlueZ 5.87 (patched)
+- DaVinci Resolve Studio **21.1.1** (v21.1.1.0010, Linux/Clang x86_64)
+- Arch Linux, kernel 7.2.11-arch1-1, BlueZ 5.87 with the one-line backport
 - Speed Editor over Bluetooth LE; Resolve inside a distrobox container
+  (`davincibox`, podman)
 
 ## Symptom
 
@@ -95,7 +96,8 @@ expected in BlueZ 5.88. One-line backport for 5.87 (see repo).
 ## Root cause 4 — Resolve rejects the fixed BlueZ (please fix this, BMD)
 
 With the BlueZ fix in place the panel went **completely dead** in Resolve —
-no LEDs, no input — and the log showed, every ~105 ms during device scan:
+no LEDs, no input — and the log showed the same error ~10 times (every
+~105 ms) during the device scan, ending with:
 
 ```
 SyManager | ERROR | BlueZ daemon version too old, reports malformed data.
@@ -120,8 +122,10 @@ size, so the check passes there, but over uhid/BlueZ the reply correctly
 includes the Report ID.
 
 **Workaround** — three bytes in `/opt/resolve/bin/resolve` (offsets for
-21.1.1; the repo's `resolve-patch.sh` verifies before patching and must be
-re-applied after every Resolve update):
+v21.1.1.0010; the repo's `resolve-patch.sh` verifies before patching and must
+be re-applied after every Resolve update). The check sites are easy to find
+in any build: `objdump -d /opt/resolve/bin/resolve | grep -B2 -A6 c0004807`
+lists every `HIDIOCGFEATURE` call, each followed by its `cmp eax, <size>`:
 
 ```
 0x4002C71: 0x07 -> 0x08
