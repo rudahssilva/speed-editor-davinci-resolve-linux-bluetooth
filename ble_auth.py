@@ -10,6 +10,9 @@ Uso:
     ./ble_auth.py                 # autentica uma vez
     ./ble_auth.py --watch         # daemon: re-autentica a cada 500s
     ./ble_auth.py --verbose       # mostra cada etapa
+
+O algoritmo de autenticacao (bmd_kbd_auth) vem de
+https://github.com/smunaut/blackmagic-misc (Apache-2.0); veja NOTICE.
 """
 import dbus
 import fcntl

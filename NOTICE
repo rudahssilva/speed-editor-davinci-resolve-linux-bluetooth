@@ -6,8 +6,8 @@ This product includes material derived from third-party projects:
    Copyright (c) 2021 Sylvain Munaut, licensed under the Apache License 2.0:
    https://www.apache.org/licenses/LICENSE-2.0
 
-2. The one-line BlueZ fix in bluez-uhid-getreport-size.patch is a backport
-   of an upstream BlueZ change (commit dc2eb1394f, "shared/uhid: Fix size of
-   Get Report reply with a Report ID") by the BlueZ contributors, licensed
-   under the GNU General Public License v2:
+2. bluez-uhid-getreport-size.patch is the verbatim upstream BlueZ commit
+   dc2eb1394f4ff5477b0ed3c72012b7f7ae02411f ("shared/uhid: Fix size of Get
+   Report reply with a Report ID") by Luiz Augusto von Dentz (Intel),
+   licensed under the GNU General Public License v2:
    https://git.kernel.org/pub/scm/bluetooth/bluez.git
