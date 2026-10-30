@@ -72,8 +72,8 @@ each other.
 ## Install
 
 ```bash
-git clone https://github.com/<you>/speed-editor-linux.git
-cd speed-editor-linux
+git clone https://github.com/rudahssilva/speed-editor-davinci-resolve-linux-bluetooth.git
+cd speed-editor-davinci-resolve-linux-bluetooth
 ./install.sh
 ```
 
