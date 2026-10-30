@@ -122,16 +122,15 @@ This is a Blackmagic-side bug: over USB the same ioctl returns the data
 size, so the check passes there, but over uhid/BlueZ the reply correctly
 includes the Report ID.
 
-**Workaround** — three bytes in `/opt/resolve/bin/resolve` (offsets for
-v21.1.1.0010; the repo's `resolve-patch.sh` verifies before patching and must
-be re-applied after every Resolve update). The check sites are easy to find
-in any build: `objdump -d /opt/resolve/bin/resolve | grep -B2 -A6 c0004807`
+**Workaround** — three bytes in `/opt/resolve/bin/resolve` (the repo's
+`resolve-patch.sh` detects the version, verifies before patching, and must be
+re-applied after every Resolve update). The check sites are easy to find in
+any build: `objdump -d /opt/resolve/bin/resolve | grep -B2 -A6 c0004807`
 lists every `HIDIOCGFEATURE` call, each followed by its `cmp eax, <size>`:
 
 ```
-0x4002C71: 0x07 -> 0x08
-0x4003C05: 0x20 -> 0x21
-0x40041F6: 0x09 -> 0x0A
+v21.1.1.0010: 0x4002C71: 0x07->0x08 | 0x4003C05: 0x20->0x21 | 0x40041F6: 0x09->0x0A
+v21.1.2.0010: 0x4036ED1: 0x07->0x08 | 0x4037E65: 0x20->0x21 | 0x4038456: 0x09->0x0A
 ```
 
 **The proper fix** is in Resolve: accept the correct return values on the

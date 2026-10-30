@@ -7,10 +7,18 @@
 # tamanho truncado (so os dados) e rejeita o painel no Bluetooth:
 #   "BlueZ daemon version too old, reports malformed data."
 #
-# Os checks sao tres `cmp eax, N` em /opt/resolve/bin/resolve (21.1.1):
-#   off 0x4002C71: 0x07 -> 0x08  (report 0x01, 7 dados)
-#   off 0x4003C05: 0x20 -> 0x21  (report 0x08, 32 dados)
-#   off 0x40041F6: 0x09 -> 0x0A  (report 0x06, 9 dados / auth)
+# Os checks sao tres `cmp eax, N` em /opt/resolve/bin/resolve:
+#   Resolve 21.1.1 (v21.1.1.0010):
+#     off 0x4002C71: 0x07 -> 0x08  (report 0x01, 7 dados)
+#     off 0x4003C05: 0x20 -> 0x21  (report 0x08, 32 dados)
+#     off 0x40041F6: 0x09 -> 0x0A  (report 0x06, 9 dados / auth)
+#   Resolve 21.1.2 (v21.1.2.0010):
+#     off 0x4036ED1: 0x07 -> 0x08
+#     off 0x4037E65: 0x20 -> 0x21
+#     off 0x4038456: 0x09 -> 0x0A
+#   Em outras versoes, localize os checks com:
+#     objdump -d /opt/resolve/bin/resolve | grep -B2 -A10 c0004807
+#   (cada HIDIOCGFEATURE eh seguido de um `cmp eax, <tamanho-truncado>`).
 #
 # Uso:
 #   podman exec -u root davincibox sh /caminho/resolve-patch.sh      aplica
@@ -37,9 +45,21 @@ state_byte() { # $1=offset
     dd if="$BIN" bs=1 skip="$1" count=1 2>/dev/null | od -An -t u1 | tr -d ' '
 }
 
-O1=$((0x4002C71)); V1=8   # 0x07 -> 0x08
-O2=$((0x4003C05)); V2=33  # 0x20 -> 0x21
-O3=$((0x40041F6)); V3=10  # 0x09 -> 0x0A
+# detecta a versao do binario (o byte 0x07 original ou 0x08 ja corrigido
+# marca o primeiro check; o mesmo vale para a 21.1.2 nos offsets novos)
+_b1=$((0x4002C71)); _b2=$((0x4036ED1))
+case "$(state_byte $_b1)/$(state_byte $_b2)" in
+    7/*)      O1=$((0x4002C71)); O2=$((0x4003C05)); O3=$((0x40041F6)) ;;  # 21.1.1 a corrigir
+    8/*)      O1=$((0x4002C71)); O2=$((0x4003C05)); O3=$((0x40041F6)) ;;  # 21.1.1 ja corrigida
+    */7)      O1=$((0x4036ED1)); O2=$((0x4037E65)); O3=$((0x4038456)) ;;  # 21.1.2 a corrigir
+    */8)      O1=$((0x4036ED1)); O2=$((0x4037E65)); O3=$((0x4038456)) ;;  # 21.1.2 ja corrigida
+    *)
+        echo "Versao do Resolve nao reconhecida (bytes nao batem)." >&2
+        echo "Ache os offsets: objdump -d $BIN | grep -B2 -A10 c0004807" >&2
+        exit 1
+        ;;
+esac
+V1=8; V2=33; V3=10
 
 b1=$(state_byte $O1); b2=$(state_byte $O2); b3=$(state_byte $O3)
 

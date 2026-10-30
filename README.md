@@ -48,7 +48,9 @@ SyManager | ERROR | Failed to add device.
 
 Result: with a fixed BlueZ the panel is *rejected at startup* (no LEDs, no
 input). The checks are three `cmp eax, N` in `/opt/resolve/bin/resolve`
-(offsets `0x4002C71`, `0x4003C05`, `0x40041F6` for 21.1.1).
+(offsets `0x4002C71`/`0x4003C05`/`0x40041F6` on 21.1.1 and
+`0x4036ED1`/`0x4037E65`/`0x4038456` on 21.1.2; the script detects the
+version).
 
 **Fix:** [`resolve-patch.sh`](resolve-patch.sh) — a 3-byte patch (7→8, 32→33,
 9→10) applied inside the container. Re-apply after every Resolve update.
