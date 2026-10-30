@@ -1,0 +1,11 @@
+[Unit]
+Description=Speed Editor Bluetooth re-auth daemon
+After=bluetooth.target
+
+[Service]
+ExecStart=@BIN@ --watch
+Restart=on-failure
+RestartSec=20
+
+[Install]
+WantedBy=default.target

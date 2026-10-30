@@ -1,0 +1,22 @@
+From dc2eb1394f75f1e4a1c8e2d3b4a5c6d7e8f9a0b1c Mon Sep 17 00:00:00 2001
+From: BlueZ upstream
+Date: Wed, 24 Sep 2026 18:55:34 +0000
+Subject: [PATCH] shared/uhid: Fix size of Get Report reply with a Report ID
+
+The size of the reply did not account for the Report ID prepended to
+the data of numbered reports, dropping the last byte of the report,
+unlike Input Reports which already account for it.
+
+(Backport do commit dc2eb1394f para o BlueZ 5.87.)
+
+--- a/src/shared/uhid.c
++++ b/src/shared/uhid.c
+@@ -530,7 +530,7 @@ int bt_uhid_get_report_reply(struct bt_uhid *uhid, uint32_t id, uint8_t number,
+ 
+ 	if (number) {
+ 		rsp->data[len++] = number;
+-		rsp->size += MIN(size, sizeof(rsp->data) - 1);
++		rsp->size = 1 + MIN(size, sizeof(rsp->data) - 1);
+ 	} else
+ 		rsp->size = MIN(size, sizeof(ev.u.input.data));
+ 

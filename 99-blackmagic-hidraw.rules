@@ -1,0 +1,24 @@
+# DaVinci Speed Editor / Replay Editor / ATEM Micro Panel
+# Permissoes em /dev/hidraw* para uso pelo DaVinci Resolve (inclusive em distrobox).
+#
+# VID da Blackmagic = 1edb
+#   da0e = Speed Editor
+#   da11 = Replay Editor
+#   bef0 = ATEM Micro Panel
+#
+# Importante: sobre BLUETOOTH o dispositivo nao e um USB HID. Ele aparece em
+# /sys/devices/virtual/misc/uhid/0005:1EDB:DA0E.* e NAO tem atributo idVendor.
+# Por isso as regras "ATTRS{idVendor}" (que o Resolve instala) nunca casam com
+# o caminho Bluetooth. As regras abaixo cobrem os dois casos.
+
+# ---- Speed Editor ----
+SUBSYSTEM=="hidraw", KERNELS=="*:1EDB:DA0E.*", MODE="0660", GROUP="input", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1edb", ATTRS{idProduct}=="da0e", MODE="0660", GROUP="input", TAG+="uaccess"
+
+# ---- Replay Editor ----
+SUBSYSTEM=="hidraw", KERNELS=="*:1EDB:DA11.*", MODE="0660", GROUP="input", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1edb", ATTRS{idProduct}=="da11", MODE="0660", GROUP="input", TAG+="uaccess"
+
+# ---- ATEM Micro Panel ----
+SUBSYSTEM=="hidraw", KERNELS=="*:1EDB:BEF0.*", MODE="0660", GROUP="input", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1edb", ATTRS{idProduct}=="bef0", MODE="0660", GROUP="input", TAG+="uaccess"
