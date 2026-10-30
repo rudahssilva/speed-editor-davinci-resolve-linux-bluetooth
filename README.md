@@ -133,8 +133,16 @@ the correct reply sizes in Resolve (see `docs/FORUM_POST.md`).
 This project is free (MIT). If it saved you a weekend of debugging, a
 donation is appreciated but never required:
 
-- **Pix (Brasil):** chave aleatória `501eed87-cbf6-4ade-9df5-c3527d158bd5`
-- **International:** [wise.com/pay/me/rudahs1](https://wise.com/pay/me/rudahs1)
+- **Pix (Brasil)** — escaneie o QR ou use uma das chaves:
+
+  ![Pix QR](pix-qr.png)
+
+  - chave aleatória: `cfdb1eff-d7e0-43e3-8233-3040d1a0f323`
+  - e-mail: `sourudahsilva@gmail.com`
+
+- **International** (outside Brazil, Pix isn't available): open
+  [wise.com/pay/me/rudahs1](https://wise.com/pay/me/rudahs1) and pay by card,
+  Apple/Google Pay or Wise balance — Wise converts to BRL automatically.
 
 
 ## License
