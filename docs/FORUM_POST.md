@@ -12,8 +12,8 @@ the panel's 600-second authentication. Everything is on GitHub:
 
 ## Environment
 
-- DaVinci Resolve Studio 19.1.x
-- Arch Linux, kernel 7.2.x, BlueZ 5.87 (patched)
+- DaVinci Resolve Studio 21.1.1
+- Arch Linux, kernel 7.2.11-arch1-1, BlueZ 5.87 (patched)
 - Speed Editor over Bluetooth LE; Resolve inside a distrobox container
 
 ## Symptom
@@ -120,7 +120,7 @@ size, so the check passes there, but over uhid/BlueZ the reply correctly
 includes the Report ID.
 
 **Workaround** — three bytes in `/opt/resolve/bin/resolve` (offsets for
-19.1.x; the repo's `resolve-patch.sh` verifies before patching and must be
+21.1.1; the repo's `resolve-patch.sh` verifies before patching and must be
 re-applied after every Resolve update):
 
 ```

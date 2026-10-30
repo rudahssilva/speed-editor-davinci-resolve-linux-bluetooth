@@ -3,11 +3,11 @@
 # que exigem o comportamento BUGADO do BlueZ (retorno truncado do GET_FEATURE).
 #
 # Contexto: com o BlueZ corrigido (commit dc2eb1394f), o ioctl HIDIOCGFEATURE
-# retorna o tamanho CORRETO (ID + dados). O Resolve 19.1.x compara com o
+# retorna o tamanho CORRETO (ID + dados). O Resolve 21.1.1 (v21.1.1.0010) compara com o
 # tamanho truncado (so os dados) e rejeita o painel no Bluetooth:
 #   "BlueZ daemon version too old, reports malformed data."
 #
-# Os checks sao tres `cmp eax, N` em /opt/resolve/bin/resolve (19.1.x):
+# Os checks sao tres `cmp eax, N` em /opt/resolve/bin/resolve (21.1.1):
 #   off 0x4002C71: 0x07 -> 0x08  (report 0x01, 7 dados)
 #   off 0x4003C05: 0x20 -> 0x21  (report 0x08, 32 dados)
 #   off 0x40041F6: 0x09 -> 0x0A  (report 0x06, 9 dados / auth)

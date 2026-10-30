@@ -6,10 +6,10 @@ small project, so contributing is easy.
 ## Ways to help
 
 - **Test on other distros / BlueZ versions** — the README documents Arch
-  (5.87) and Resolve 19.1.x. Reports from Fedora, Ubuntu, openSUSE, other
+  (5.87) and Resolve 21.1.1 (v21.1.1.0010). Reports from Fedora, Ubuntu, openSUSE, other
   BlueZ versions, or newer Resolve builds are very welcome (open an issue
   with the output of `./check.sh` and `./bluez-probe.py`).
-- **Resolve binary offsets** — `resolve-patch.sh` holds offsets for 19.1.x.
+- **Resolve binary offsets** — `resolve-patch.sh` holds offsets for 21.1.1.
   If a Resolve update moves them, please open an issue (or PR) with the new
   offsets. The offsets come from three `cmp eax, <size>` checks after
   `HIDIOCGFEATURE` (the values 7/32/9 in stock builds); `objdump -d

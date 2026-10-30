@@ -4,7 +4,7 @@ Make the **Blackmagic DaVinci Resolve Speed Editor** work over **Bluetooth**
 (HID-over-GATT) on Linux — including inside a distrobox/podman container —
 without the UI lag that otherwise makes it unusable.
 
-Tested with: DaVinci Resolve Studio 19.1.x, Arch Linux, kernel 7.2.x,
+Tested with: DaVinci Resolve Studio 21.1.1, Arch Linux, kernel 7.2.11-arch1-1,
 BlueZ 5.87, Speed Editor firmware with the `bmd_kbd_auth` handshake.
 
 ---
@@ -37,7 +37,7 @@ expected in BlueZ 5.88. Backport for 5.87:
 + [build instructions](bluez/README-BLUEZ-PATCH.md).
 
 ### 3. Resolve rejects the *fixed* BlueZ ("BlueZ daemon version too old")
-DaVinci Resolve 19.1.x compares the return value of `HIDIOCGFEATURE` against
+DaVinci Resolve 21.1.1 (v21.1.1.0010) compares the return value of `HIDIOCGFEATURE` against
 the **truncated** sizes (7 / 32 / 9 — the buggy-BlueZ values) and, on
 Bluetooth, treats the *correct* values (8 / 33 / 10) as malformed data:
 
@@ -48,7 +48,7 @@ SyManager | ERROR | Failed to add device.
 
 Result: with a fixed BlueZ the panel is *rejected at startup* (no LEDs, no
 input). The checks are three `cmp eax, N` in `/opt/resolve/bin/resolve`
-(offsets `0x4002C71`, `0x4003C05`, `0x40041F6` for 19.1.x).
+(offsets `0x4002C71`, `0x4003C05`, `0x40041F6` for 21.1.1).
 
 **Fix:** [`resolve-patch.sh`](resolve-patch.sh) — a 3-byte patch (7→8, 32→33,
 9→10) applied inside the container. Re-apply after every Resolve update.
