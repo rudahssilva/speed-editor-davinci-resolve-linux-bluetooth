@@ -90,19 +90,24 @@ def main():
     m.close()
     f.close()
 
-    if len(checks) != 3:
-        print(f"AVISO: achei {len(checks)} comparacoes (esperava 3): "
-              + ", ".join(f"0x{o:X}={c}" for o, c in checks), file=sys.stderr)
-        if not checks:
-            sys.exit("Resolve desconhecido (Blackmagic pode ter corrigido os "
-                     "checks — nesse caso patch nao e necessario).")
-
     if a.status:
         for off, cur in checks:
             want = SIZES.get(cur, cur)
             state = "ok   " if cur == want else "FALTA"
             print(f"{state} offset 0x{off:X}: {cur} (esperado {want})")
+        if len(checks) != 3:
+            print(f"aviso: achei {len(checks)} comparacoes (esperava 3)", file=sys.stderr)
         return
+
+    # Never write into a half-recognised binary: with fewer (or more) than three
+    # checks the patch does not make Resolve work, and a false positive would
+    # corrupt an unrelated instruction.
+    if len(checks) != 3:
+        sys.exit("erro: achei %d comparacoes (esperava 3): %s\n"
+                 "Nada foi alterado. Se for uma versao nova do Resolve, a "
+                 "Blackmagic pode ter mudado o codigo (ou corrigido os checks)."
+                 % (len(checks),
+                    ", ".join(f"0x{o:X}={c}" for o, c in checks) or "nenhuma"))
 
     if os.geteuid() != 0:
         sys.exit("precisa de root: sudo ./resolve-patch.py")

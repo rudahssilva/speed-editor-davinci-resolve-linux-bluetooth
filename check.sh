@@ -47,5 +47,5 @@ fi
 
 echo
 echo "=== dica ==="
-echo "BLOQUEADO? rode:  sudo ./install.sh"
+echo "BLOQUEADO? rode:  ./install.sh   (sem sudo: ele mesmo chama sudo)"
 echo "(o install.sh usa o seu grupo primario, nao precisa de logout)"

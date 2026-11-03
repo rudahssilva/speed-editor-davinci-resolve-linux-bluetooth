@@ -34,7 +34,7 @@ Fixed upstream: commit
 [`dc2eb1394f`](https://github.com/bluez/bluez/commit/dc2eb1394f)
 *"shared/uhid: Fix size of Get Report reply with a Report ID"* (2026-09-24),
 expected in BlueZ 5.88. Backport for 5.87:
-[`bluez/bluez-uhid-getreport-size.patch`](bluez/bluez-uhid-getreport-size.patch)
+[`bluez-uhid-getreport-size.patch`](bluez-uhid-getreport-size.patch)
 + [build instructions](bluez/README-BLUEZ-PATCH.md).
 
 ### 3. Resolve rejects the *fixed* BlueZ ("BlueZ daemon version too old")
@@ -117,7 +117,7 @@ Useful:
 - `./bluez-probe.py` — is this BlueZ truncating numbered reports?
 - `./resolve-patch.py --status` — are the three checks patched on *this* binary?
 - `./read_hid.py --no-auth` — live input dump (buttons/wheel).
-- `./repair.sh` — re-pair the panel after a reset
+- `./tools/repair.sh` — re-pair the panel after a reset
   (hold `CUT + SMTH CUT` for 3 s to reset; the panel remembers one host).
 
 ## Files
@@ -131,7 +131,7 @@ Useful:
 | `resolve-patch.sh` | shim kept for compatibility, runs `resolve-patch.py` |
 | `ble_auth.py` | auth daemon (fallback/bootstrap) |
 | `read_hid.py` | HID tool + `bmd_kbd_auth` implementation |
-| `check.sh`, `tools/parse_btmon.py`, `repair.sh` | diagnostics |
+| `check.sh`, `tools/parse_btmon.py`, `tools/repair.sh` | diagnostics |
 | `docs/FORUM_POST.md` | full write-up (forum post) |
 | `docs/MANUAL-INSTALL.md` | install Resolve by hand when the official installer fails (21.1.2 bug) |
 

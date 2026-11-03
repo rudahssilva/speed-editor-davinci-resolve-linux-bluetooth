@@ -38,9 +38,12 @@ compilar o 5.87 com o patch de uma linha:
    de abrir o Resolve (ele acha os checks sozinho, nao depende de offset):
 
        sudo ./resolve-patch.py            # Resolve no host
-       podman exec -u root davincibox python3 /tmp/resolve-patch.py   # em container
+       # em container: copie o script e rode la dentro (root, para escrever no binario)
+       podman cp resolve-patch.py davincibox:/tmp/
+       podman exec -u root davincibox python3 /tmp/resolve-patch.py
 
-   Para conferir sem alterar nada: `./resolve-patch.py --status`.
+   Para conferir sem alterar nada: `./resolve-patch.py --status`
+   (ou, no container, `podman exec -u root davincibox python3 /tmp/resolve-patch.py --status`).
 
 ## Nota
 

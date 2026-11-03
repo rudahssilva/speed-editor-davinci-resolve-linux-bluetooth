@@ -301,7 +301,7 @@ def main() -> int:
     try:
         fd = os.open(dev, os.O_RDWR | os.O_NONBLOCK)
     except PermissionError:
-        print(f"SEM PERMISSAO em {dev}.\nRode: sudo ./install.sh", file=sys.stderr)
+        print(f"SEM PERMISSAO em {dev}.\nRode: ./install.sh  (sem sudo)", file=sys.stderr)
         return 2
     except OSError as exc:
         print(f"erro ao abrir {dev}: {exc}", file=sys.stderr)

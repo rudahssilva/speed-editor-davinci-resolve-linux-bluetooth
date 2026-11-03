@@ -43,7 +43,9 @@ Felizmente o instalador é só um copiador de arquivos com alguns hooks
 5. Aplicar o patch de 3 bytes (checks do Bluetooth):
 
        sudo ./resolve-patch.py                                        # Resolve no host
-       podman exec -u root davincibox python3 /tmp/resolve-patch.py    # em container
+       # em container: copie o script antes de rodar
+       podman cp resolve-patch.py davincibox:/tmp/
+       podman exec -u root davincibox python3 /tmp/resolve-patch.py
 
 6. Limpar (libera ~16 GB):
 

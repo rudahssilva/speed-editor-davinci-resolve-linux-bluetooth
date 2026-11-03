@@ -16,12 +16,26 @@ RULE="/etc/udev/rules.d/99-blackmagic-hidraw.rules"
 step() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
 fail() { printf '\033[1;31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
+# Never run the whole script as root: the udev rule would then ship with
+# GROUP="root" (the panel stays unreadable for you) and the helpers would be
+# installed into /root/.local/bin for root's systemd user session. The script
+# sudo's by itself for the single step that needs it.
+if [ "$(id -u)" = 0 ] && [ -n "${SUDO_USER:-}" ]; then
+    fail "run it as your user, not with sudo: ./install.sh  (it calls sudo for the udev rule)"
+fi
+
 if [ "${1:-}" = "--check" ]; then
     "$HERE/check.sh"
     step "BlueZ (GET_REPORT reply size)"
     "$HERE/bluez-probe.py" || true
     step "Resolve binary"
-    "$HERE/resolve-patch.py" --status || true
+    # Resolve may live inside the distrobox container; check it there without
+    # copying anything in (the script reads itself from stdin).
+    if command -v podman >/dev/null 2>&1 && podman container exists "$CONTAINER" 2>/dev/null; then
+        podman exec -i -u root "$CONTAINER" python3 - --status < "$HERE/resolve-patch.py" || true
+    else
+        "$HERE/resolve-patch.py" --status || true
+    fi
     exit 0
 fi
 
@@ -47,6 +61,10 @@ sed "s|@BIN@|$BIN_DIR/ble_auth.py|" "$HERE/speed-editor-ble-auth.service" \
     > "$UNIT_DIR/speed-editor-ble-auth.service"
 systemctl --user daemon-reload
 if [ "${1:-}" = "--with-auth-daemon" ]; then
+    if ! python3 -c "import dbus" 2>/dev/null; then
+        echo "warning: python-dbus missing — ble_auth.py will not run."
+        echo "  Arch: sudo pacman -S python-dbus   (or skip the daemon: Resolve does the auth itself)"
+    fi
     systemctl --user enable --now speed-editor-ble-auth.service
     echo "ok: $BIN_DIR/{read_hid,ble_auth,resolve-patch}.py + auth daemon ENABLED"
 else
@@ -87,4 +105,4 @@ else
 fi
 
 echo
-echo "done. Connect the panel (repair.sh if it needs re-pairing) and open Resolve."
+echo "done. Connect the panel (tools/repair.sh if it needs re-pairing) and open Resolve."
