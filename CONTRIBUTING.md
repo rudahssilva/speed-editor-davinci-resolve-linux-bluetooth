@@ -10,12 +10,12 @@ small project, so contributing is easy.
   Fedora, Ubuntu, openSUSE, other
   BlueZ versions, or newer Resolve builds are very welcome (open an issue
   with the output of `./check.sh` and `./bluez-probe.py`).
-- **Resolve binary offsets** — `resolve-patch.sh` holds offsets for 21.1.1
-  and 21.1.2 (it detects the version).
-  If a Resolve update moves them, please open an issue (or PR) with the new
-  offsets. The offsets come from three `cmp eax, <size>` checks after
-  `HIDIOCGFEATURE` (the values 7/32/9 in stock builds); `objdump -d
-  /opt/resolve/bin/resolve | grep -B2 -A6 'c0004807'` finds them.
+- **Resolve binary offsets** — `resolve-patch.py` locates the three
+  `cmp eax, <size>` checks by signature, so it does not need offsets per
+  build. If a Resolve update changes that shape and the script refuses to
+  patch, open an issue (or PR) with what it printed; the checks sit right
+  after `HIDIOCGFEATURE` (values 7/32/9 in stock builds) and `objdump -d
+  /opt/resolve/bin/resolve | grep -B2 -A6 'c0004807'` shows them.
 - **Other Blackmagic panels** — the udev rule already covers the Replay
   Editor (`DA11`) and ATEM Micro Panel (`BEF0`), untested. If you own one,
   try it and tell us.

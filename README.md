@@ -52,16 +52,15 @@ Result: with a fixed BlueZ the panel is *rejected at startup* (no LEDs, no
 input). The checks are three `cmp eax, N` in `/opt/resolve/bin/resolve`,
 right after each `HIDIOCGFEATURE` ioctl.
 
-Do not trust published offsets: Blackmagic ships *different builds under the
-same version string*. On two 21.1.2 installs seen in the wild the same three
-checks sat 0x2000 apart (`.text` started at file offset `0x41C000` on one and
-`0x41E000` on the other). Offsets quoted in older revisions of this README
-(`0x4002C71`… / `0x4036ED1`…) are therefore wrong on those builds — they were
-read out of one machine.
+Those file offsets are not stable: Blackmagic can ship different binaries
+under the same version string, and anything laid out before `.text` shifts the
+whole code region. Two 21.1.2.0010 installs were measured 0x2000 apart
+(`.text` at file offset `0x41C000` on one, `0x41E000` on the other) with the
+spacing between the three checks identical (`0xF94`, `0x5F1`).
 
 **Fix:** [`resolve-patch.py`](resolve-patch.py) — a 3-byte patch (7→8, 32→33,
-9→10). It *finds* the three comparisons by signature instead of using fixed
-offsets:
+9→10). Rather than a per-version offset table it *locates* the three
+comparisons by signature:
 
 ```
 ioctl(... HIDIOCGFEATURE(len) ...)    ; base constant 0xc0004807
@@ -139,9 +138,9 @@ Useful:
 ## FAQ
 
 **Does the Resolve patch need re-applying after a Resolve update?**
-Yes — the updater overwrites `/opt/resolve/bin/resolve`. `resolve-patch.sh`
-verifies the bytes before touching anything: if the offsets moved (new
-version) or Blackmagic fixed the checks, it refuses to patch and says so.
+Yes — the updater overwrites `/opt/resolve/bin/resolve`. `resolve-patch.py`
+verifies the signature before touching anything: if it is not there (new
+code layout, or Blackmagic fixed the checks) it refuses to patch and says so.
 
 **Is the Resolve patch needed by everyone who updates BlueZ?**
 It's the other way around: with the *fixed* BlueZ the patch becomes
@@ -196,8 +195,8 @@ project. In the same spirit, the BlueZ commit this repo depends on carries an
 ## Contributing
 
 Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Most useful
-contributions: test reports from other distros/BlueZ versions, and updated
-Resolve binary offsets when a new release moves them.
+contributions: test reports from other distros/BlueZ versions, and reports
+when a new Resolve release changes the code shape the patch looks for.
 
 ## License
 

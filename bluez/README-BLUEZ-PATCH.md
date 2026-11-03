@@ -34,10 +34,13 @@ compilar o 5.87 com o patch de uma linha:
 
 6. **Atencao:** com o BlueZ corrigido, o Resolve original REJEITA o painel
    ("BlueZ daemon version too old, reports malformed data.") — os checks
-   internos dele esperam o tamanho truncado. Rode o `resolve-patch.sh`
-   dentro do container antes de abrir o Resolve:
+   internos dele esperam o tamanho truncado. Rode o `resolve-patch.py` antes
+   de abrir o Resolve (ele acha os checks sozinho, nao depende de offset):
 
-       podman exec -u root davincibox sh ./resolve-patch.sh
+       sudo ./resolve-patch.py            # Resolve no host
+       podman exec -u root davincibox python3 /tmp/resolve-patch.py   # em container
+
+   Para conferir sem alterar nada: `./resolve-patch.py --status`.
 
 ## Nota
 
