@@ -13,11 +13,18 @@ https://github.com/rudahssilva/speed-editor-davinci-resolve-linux-bluetooth
 ## Environment
 
 - DaVinci Resolve Studio **21.1.1 and 21.1.2** (v21.1.1.0010 and
-  v21.1.2.0010, Linux/Clang x86_64) — both tested, same behavior
+  v21.1.2.0010, Linux/Clang x86_64) — same symptom, same fix on both
+- Two setups: Resolve inside a distrobox container (`davincibox`, podman) and
+  Resolve installed natively under `/opt/resolve`
 - Arch Linux, kernel 7.2.11-arch1-1, BlueZ 5.87 with the one-line backport
 - Speed Editor over Bluetooth LE with the latest available firmware
-  (Blackmagic hasn't shipped a firmware update in years); Resolve inside a
-  distrobox container (`davincibox`, podman)
+  (Blackmagic hasn't shipped a firmware update in years)
+
+The same version string does not mean the same binary: two 21.1.2.0010
+installs were measured with `.text` at file offset 0x41C000 on one and
+0x41E000 on the other — the whole code region 0x2000 apart, with identical
+spacing between the three checks. That is why the workaround below looks the
+checks up by signature instead of carrying an offset table.
 
 ## Symptom
 
@@ -123,16 +130,30 @@ This is a Blackmagic-side bug: over USB the same ioctl returns the data
 size, so the check passes there, but over uhid/BlueZ the reply correctly
 includes the Report ID.
 
-**Workaround** — three bytes in `/opt/resolve/bin/resolve` (the repo's
-`resolve-patch.sh` detects the version, verifies before patching, and must be
-re-applied after every Resolve update). The check sites are easy to find in
-any build: `objdump -d /opt/resolve/bin/resolve | grep -B2 -A6 c0004807`
-lists every `HIDIOCGFEATURE` call, each followed by its `cmp eax, <size>`:
+**Workaround** — three bytes in `/opt/resolve/bin/resolve`, re-applied after
+every Resolve update (the updater overwrites the file). The repo's
+`resolve-patch.py` finds the three sites by their code shape, not by offset:
+each `HIDIOCGFEATURE` call is followed by `test eax, eax`, a jump to the error
+path and `cmp eax, <size>` — bytes `85 C0 0F 88 .. 83 F8 <N>` — with the ioctl
+base constant `07 48 00 C0` shortly before. It prints what it found, refuses
+to write when the shape is missing (new code layout, or Blackmagic fixed it),
+and takes `--status` and `--restore`:
 
 ```
-v21.1.1.0010: 0x4002C71: 0x07->0x08 | 0x4003C05: 0x20->0x21 | 0x40041F6: 0x09->0x0A
-v21.1.2.0010: 0x4036ED1: 0x07->0x08 | 0x4037E65: 0x20->0x21 | 0x4038456: 0x09->0x0A
+./resolve-patch.py --status     # read-only, no root needed
+sudo ./resolve-patch.py         # 7->8, 32->33, 9->10
 ```
+
+Measured on the builds seen so far (for reference only):
+
+```
+v21.1.1.0010                 : 0x4002C71: 0x07->0x08 | 0x4003C05: 0x20->0x21 | 0x40041F6: 0x09->0x0A
+v21.1.2.0010                 : 0x4036ED1: 0x07->0x08 | 0x4037E65: 0x20->0x21 | 0x4038456: 0x09->0x0A
+v21.1.2.0010 (other install) : 0x4034ED1: 0x07->0x08 | 0x4035E65: 0x20->0x21 | 0x4036456: 0x09->0x0A
+```
+
+`objdump -d /opt/resolve/bin/resolve | grep -B2 -A6 c0004807` lists every
+`HIDIOCGFEATURE` call if you want to look at them yourself.
 
 **The proper fix** is in Resolve: accept the correct return values on the
 Bluetooth transport (or validate the payload instead of the ioctl size).
@@ -157,6 +178,7 @@ characteristic (`NotAuthorized`) but allows **reads**, it writes through
 ```
 ./check.sh                         # node, bus, permissions
 ./bluez-probe.py                   # GET_FEATURE returns 8 = BlueZ fixed
+./resolve-patch.py --status        # the three checks are patched on this binary
 ./read_hid.py --no-auth            # live input dump
 ```
 
