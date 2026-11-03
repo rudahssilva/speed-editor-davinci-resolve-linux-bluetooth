@@ -47,5 +47,5 @@ fi
 
 echo
 echo "=== dica ==="
-echo "BLOQUEADO? rode:  sudo ./install-udev.sh"
-echo "(o script usa o seu grupo primario, nao precisa de logout)"
+echo "BLOQUEADO? rode:  sudo ./install.sh"
+echo "(o install.sh usa o seu grupo primario, nao precisa de logout)"
