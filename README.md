@@ -49,13 +49,30 @@ SyManager | ERROR | Failed to add device.
 ```
 
 Result: with a fixed BlueZ the panel is *rejected at startup* (no LEDs, no
-input). The checks are three `cmp eax, N` in `/opt/resolve/bin/resolve`
-(offsets `0x4002C71`/`0x4003C05`/`0x40041F6` on 21.1.1 and
-`0x4036ED1`/`0x4037E65`/`0x4038456` on 21.1.2; the script detects the
-version).
+input). The checks are three `cmp eax, N` in `/opt/resolve/bin/resolve`,
+right after each `HIDIOCGFEATURE` ioctl.
 
-**Fix:** [`resolve-patch.sh`](resolve-patch.sh) — a 3-byte patch (7→8, 32→33,
-9→10) applied inside the container. Re-apply after every Resolve update.
+Do not trust published offsets: Blackmagic ships *different builds under the
+same version string*. On two 21.1.2 installs seen in the wild the same three
+checks sat 0x2000 apart (`.text` started at file offset `0x41C000` on one and
+`0x41E000` on the other). Offsets quoted in older revisions of this README
+(`0x4002C71`… / `0x4036ED1`…) are therefore wrong on those builds — they were
+read out of one machine.
+
+**Fix:** [`resolve-patch.py`](resolve-patch.py) — a 3-byte patch (7→8, 32→33,
+9→10). It *finds* the three comparisons by signature instead of using fixed
+offsets:
+
+```
+ioctl(... HIDIOCGFEATURE(len) ...)    ; base constant 0xc0004807
+test eax, eax
+js   <error>
+cmp  eax, N                           ; <- N = 7 / 32 / 9  (bytes: 85 C0 0F 88 .. 83 F8 N)
+```
+
+so it survives version and build changes, and refuses to touch the binary if
+the signature is gone (Blackmagic fixed it, or the code moved). Re-apply after
+every Resolve update.
 
 ### 4. The 600-second authentication
 The panel only reports input after a mutual challenge/response handshake on
@@ -84,10 +101,13 @@ cd speed-editor-davinci-resolve-linux-bluetooth
 `install.sh` does (with `sudo` where needed):
 
 1. Installs the udev rule (group = your primary group, no logout needed).
-2. Installs `read_hid.py` + `ble_auth.py` to `~/.local/bin/` and enables the
-   `speed-editor-ble-auth` systemd user service (auth fallback).
-3. Applies the 3-byte Resolve patch inside your distrobox container
-   (default `davincibox`, override with `CONTAINER=...`).
+2. Installs `read_hid.py`, `ble_auth.py` and `resolve-patch.py` to
+   `~/.local/bin/`, plus the `speed-editor-ble-auth` systemd user service —
+   installed but **left disabled**, since Resolve renews the handshake itself
+   once BlueZ is fixed (`--with-auth-daemon` enables it).
+3. Applies the 3-byte Resolve patch — inside your distrobox container if it
+   finds one (default `davincibox`, override with `CONTAINER=...`), otherwise
+   on a host install (`/opt/resolve/bin/resolve`).
 4. Probes your BlueZ: if the buggy GET_REPORT size is detected, it prints the
    exact steps to build the one-line fix
    ([`bluez/README-BLUEZ-PATCH.md`](bluez/README-BLUEZ-PATCH.md)).
@@ -95,6 +115,8 @@ cd speed-editor-davinci-resolve-linux-bluetooth
 Useful:
 
 - `./check.sh` — quick diagnostic (node, bus, permissions).
+- `./bluez-probe.py` — is this BlueZ truncating numbered reports?
+- `./resolve-patch.py --status` — are the three checks patched on *this* binary?
 - `./read_hid.py --no-auth` — live input dump (buttons/wheel).
 - `./repair.sh` — re-pair the panel after a reset
   (hold `CUT + SMTH CUT` for 3 s to reset; the panel remembers one host).
@@ -106,7 +128,8 @@ Useful:
 | `99-blackmagic-hidraw.rules` | udev permissions (USB + Bluetooth) |
 | `bluez-uhid-getreport-size.patch` | one-line BlueZ backport (upstream fix) |
 | `bluez/README-BLUEZ-PATCH.md` | Arch PKGBUILD build instructions |
-| `resolve-patch.sh` | 3-byte patch for the Resolve binary checks |
+| `resolve-patch.py` | 3-byte patch for the Resolve binary checks (auto-detect) |
+| `resolve-patch.sh` | shim kept for compatibility, runs `resolve-patch.py` |
 | `ble_auth.py` | auth daemon (fallback/bootstrap) |
 | `read_hid.py` | HID tool + `bmd_kbd_auth` implementation |
 | `check.sh`, `tools/parse_btmon.py`, `repair.sh` | diagnostics |
